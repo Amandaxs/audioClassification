@@ -8,6 +8,8 @@ import utils_treat_data as ut
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import os.path
+from pathlib import Path
 st.write("""
 # Demo
 """)
@@ -26,6 +28,7 @@ pasta_salvar_audios = 'cutted_audio/'
 src = pasta + audio_name + '.mp3'
 dest = pasta + audio_name + '.wav'
 
+audio_loc = pasta + audio_name
 ## parameters 
 threshold = 0.7
 max_consec = 50
@@ -66,8 +69,13 @@ st.markdown("###  " +
             classificacao, 
             unsafe_allow_html=True)
 
+def display_wavfile(wavpath):
+    audio_bytes = open(wavpath, 'rb').read()
+    file_type = Path(wavpath).suffix
+    st.audio(audio_bytes, format=f'audios/{file_type}', start_time=0)
 
 if st.checkbox('Ver Detalhes'):
+    display_wavfile(audio_loc)
     for i in lista_audios:
         #st.markdown("- **" + i + "**")
         predictions = c.get_prediction(model = model,filename = i, print=False)
