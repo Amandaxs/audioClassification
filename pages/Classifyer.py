@@ -46,40 +46,48 @@ c.multiple_split(audio =audio,
 lista_audios = c.get_audio_split(audio_name = audio_name, folder = pasta_salvar_audios )
 
 
-st.caption(audio_name)
+#st.caption(audio_name)
 
 model = c.get_model(model_name)
-for i in lista_audios:
-    #st.markdown("- **" + i + "**")
-    predictions = c.get_prediction(model = model,filename = i, print=False)
-    ll= predictions[0,:,0]
-    #ax1, ax2 = fig.subplots(2, 1, sharey=True,sharex=True)
-    fig = plt.figure(figsize=[6.4, 1.5]) 
-    ax1 = fig.subplots(1)
-    ax1.plot(ll)
-    ax1.set_ylim([0, 1.05])
-    ax1.set_ylabel('probability')
-    #plt.ylabel('Probability')
-    st.pyplot(fig)
-    nn = c.number_of_consecutives(predictions = predictions, threshold = threshold)
-    N_consecutivess = '-'.join(str(x) for x in nn)
-    st.markdown("Especificação de quantidade de pontos consecutivos acima do limiar de " + str(threshold) + " : " + N_consecutivess)
+
 
 lista_audios = c.get_audio_split(audio_name = audio_name, folder = pasta_salvar_audios )
 consecutives  = c.get_all_predictions_consecutives(model = model, list_of_audios = lista_audios,threshold = threshold, print = False)
 consecutivess = ''.join(str(x) for x in consecutives)
 res = c.second_classifier(consecutives, limit = max_consec)
 if res == 1:
-    classificacao = "<span style='color:red'> contém ruido industrial </span>"
+    classificacao = "<span style='color:red'> Ruído industrial </span>"
 else:
-    classificacao = "<span style='color:green'> não contém ruido industrial </span>"
+    classificacao = "<span style='color:green'> Ruído Comunidade </span>"
 
 
 
-st.markdown("### Considerando um limiar de " + 
-            str(threshold * 100) + 
-            """% e o maior número de steps consecutivos acima do limiar de """ +
-            str(max_consec) +
-            " steps o audio selecionado " + 
+st.markdown("###  " + 
             classificacao, 
             unsafe_allow_html=True)
+
+
+if st.checkbox('Ver Detalhes'):
+    for i in lista_audios:
+        #st.markdown("- **" + i + "**")
+        predictions = c.get_prediction(model = model,filename = i, print=False)
+        ll= predictions[0,:,0]
+        #ax1, ax2 = fig.subplots(2, 1, sharey=True,sharex=True)
+        fig = plt.figure(figsize=[6.4, 1.5]) 
+        ax1 = fig.subplots(1)
+        ax1.plot(ll)
+        ax1.set_ylim([0, 1.05])
+        ax1.set_ylabel('probability')
+        #plt.ylabel('Probability')
+        st.pyplot(fig)
+        nn = c.number_of_consecutives(predictions = predictions, threshold = threshold)
+        N_consecutivess = '-'.join(str(x) for x in nn)
+        st.markdown("Especificação de quantidade de pontos consecutivos acima do limiar de " + str(threshold) + " : " + N_consecutivess)
+
+        
+    st.markdown("### O resultado considera um limiar de " + 
+                str(threshold * 100) + 
+                """% e uma quantidade de """ +
+                str(max_consec) +
+                " valores consecutivos acima do limiar " 
+                ,unsafe_allow_html=True)
